@@ -1,0 +1,10 @@
+.App{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.formulario{
+  display: flex;
+  flex-direction: column;
+}
