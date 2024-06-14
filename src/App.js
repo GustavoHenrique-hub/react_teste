@@ -13,12 +13,14 @@ function App() {
   const [stateNewName, setStateNewName] = useState("");
   const [stateNewCrm, setStateNewCrm] = useState("");
 
+  const [stateResultadoApi, setStateResultadoApi] = useState("");
+
   const callAlterUser = (e) => {
-    const buscaPorId = `http://localhost:8080/medico/altera/${stateId}`;
+    const alterById = `http://localhost:8080/medico/altera/${stateId}`;
 
     e.preventDefault();
     try {
-      fetch(buscaPorId, {
+      fetch(alterById, {
         method: 'PUT',
         headers: {
           Accept: "application/json",
@@ -110,6 +112,37 @@ function App() {
       console.log("ERROR FETCHING DATA: ", err);
     }
   };
+
+  const callDeleteUser = (e) => {
+    const deleteById = `http://localhost:8080/medico/delete/${stateId}`;
+
+    e.preventDefault();
+    try {
+      fetch(deleteById, {
+        method: 'DELETE',
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Network response was not ok ${response.statusText}`);
+        }
+        return response.json(); // Continua como JSON
+      })
+      .then((dadoUsuario) => {
+        console.log(dadoUsuario);
+        setStateResultadoApi(dadoUsuario.message); // Lida com a resposta JSON
+      })
+      .catch((err) => {
+        console.error("Erro ao fazer a requisição:", err);
+      });
+    } catch (err) {
+      console.error("ERRO:", err);
+    }
+  }
+
   return (
     <div className="App">
       <br/>
@@ -237,29 +270,13 @@ function App() {
           <input
             type="text"
             name="nome"
-            value={stateNewId}
+            placeholder="Digite o id a ser deletado"
             onChange={ 
               (e) => {
                 setStateId(e.target.value)
                 }
             }
             
-          />
-
-          <label htmlFor="nome">Nome</label>
-          <input
-            type="text"
-            name="nome"
-            placeholder={stateNameById}
-            onChange={(e) => setStateNewName(e.target.value)}
-          />
-
-          <label htmlFor="CRM">CRM</label>
-          <input
-            type="text"
-            name="CRM"
-            placeholder={stateCrmById}
-            onChange={(e) => setStateNewCrm(e.target.value)}
           />
 
           <input type="submit" value="Gravar" />
@@ -274,11 +291,8 @@ function App() {
           >
             <br />
             
-            <span>{stateNewName}</span>
+            <span>{stateResultadoApi}</span>
 
-            <br />
-
-            <span>{stateNewCrm}</span>
           </div>
         </form>
       </div>
