@@ -6,6 +6,43 @@ function App() {
   const [stateCRM, setStateCRM] = useState("");
   const [stateId, setStateId] = useState("");
 
+  const [stateNameById, setStateNameById] = useState("");
+  const [stateCrmById, setStateCrmById] = useState("");
+
+  const [stateNewId, setStateNewId] = useState("");
+  const [stateNewName, setStateNewName] = useState("");
+  const [stateNewCrm, setStateNewCrm] = useState("");
+
+  const callAlterUser = (e) => {
+    const buscaPorId = `http://localhost:8080/medico/altera/${stateId}`;
+
+    e.preventDefault();
+    try {
+      fetch(buscaPorId, {
+        method: 'PUT',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          nome: stateNewName,
+          crm: stateNewCrm,
+        }),
+      })
+        .then((response) => {
+          console.log("Response received:", response);
+
+          return response.json();
+        })
+        .then((dadoUsuario) => {
+          console.log(dadoUsuario);
+
+        });
+    } catch (err) {
+      console.log("ERRO: ", err);
+    }
+  }
+
   const callSearchById = (e) => {
     const buscaPorId = `http://localhost:8080/medico/busca/${stateId}`;
 
@@ -19,6 +56,9 @@ function App() {
         })
         .then((dadoUsuario) => {
           console.log(dadoUsuario);
+          setStateNewId(dadoUsuario.id)
+          setStateNameById(dadoUsuario.nome);
+          setStateCrmById(dadoUsuario.crm);
         });
     } catch (err) {
       console.log("ERRO: ", err);
@@ -42,6 +82,7 @@ function App() {
       console.log("ERRO: ", err);
     }
   };
+  
   const callMedApi = (e) => {
     const insertPost = `http://localhost:8080/medico/inserir`;
 
@@ -116,8 +157,59 @@ function App() {
           <input
             type="text"
             name="nome"
-            placeholder="Digite seu nome"
+            placeholder="Digite seu Id"
             onChange={(e) => setStateId(e.target.value)}
+          />
+
+          <input type="submit" value="Gravar" />
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",  
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <br />
+            
+            <span>{stateNameById}</span>
+
+            <br />
+
+            <span>{stateCrmById}</span>
+          </div>
+        </form>
+
+
+        <form onSubmit={callAlterUser} method="PUT">
+          <label htmlFor="ID">Id</label>
+          <input
+            type="text"
+            name="nome"
+            value={stateNewId}
+            onChange={ 
+              (e) => {
+                setStateId(e.target.value)
+                }
+            }
+            
+          />
+
+          <label htmlFor="nome">Nome</label>
+          <input
+            type="text"
+            name="nome"
+            placeholder={stateNameById}
+            onChange={(e) => setStateNewName(e.target.value)}
+          />
+
+          <label htmlFor="CRM">CRM</label>
+          <input
+            type="text"
+            name="CRM"
+            placeholder={stateCrmById}
+            onChange={(e) => setStateNewCrm(e.target.value)}
           />
 
           <input type="submit" value="Gravar" />
@@ -131,11 +223,62 @@ function App() {
             }}
           >
             <br />
-            <span>{stateName}</span>
+            
+            <span>{stateNewName}</span>
 
             <br />
 
-            <span>{stateCRM}</span>
+            <span>{stateNewCrm}</span>
+          </div>
+        </form>
+
+        <form onSubmit={callDeleteUser} method="DELETE">
+          <label htmlFor="ID">Id</label>
+          <input
+            type="text"
+            name="nome"
+            value={stateNewId}
+            onChange={ 
+              (e) => {
+                setStateId(e.target.value)
+                }
+            }
+            
+          />
+
+          <label htmlFor="nome">Nome</label>
+          <input
+            type="text"
+            name="nome"
+            placeholder={stateNameById}
+            onChange={(e) => setStateNewName(e.target.value)}
+          />
+
+          <label htmlFor="CRM">CRM</label>
+          <input
+            type="text"
+            name="CRM"
+            placeholder={stateCrmById}
+            onChange={(e) => setStateNewCrm(e.target.value)}
+          />
+
+          <input type="submit" value="Gravar" />
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <br />
+            
+            <span>{stateNewName}</span>
+
+            <br />
+
+            <span>{stateNewCrm}</span>
           </div>
         </form>
       </div>
