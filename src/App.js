@@ -2,90 +2,59 @@ import { useState } from "react";
 import "./App.css";
 
 function App() {
-  const [stateName, setStateName] = useState("");
-  const [stateCRM, setStateCRM] = useState("");
-  const [stateId, setStateId] = useState("");
+  //Find all values
+  const [stateProdId, setStateProdId] = useState("");
+  const [stateProdName, setStateProdName] = useState("");
+  const [stateProdQuant, setStateProdQuant] = useState("");
+  const [stateProdPrice, setStateProdPrice] = useState("")
 
-  const [stateNameById, setStateNameById] = useState("");
-  const [stateCrmById, setStateCrmById] = useState("");
+  const [stateProdNameById, setStateProdNameById] = useState("");
 
-  const [stateNewId, setStateNewId] = useState("");
   const [stateNewName, setStateNewName] = useState("");
-  const [stateNewCrm, setStateNewCrm] = useState("");
 
   const [stateResultadoApi, setStateResultadoApi] = useState("");
 
-  const callAlterUser = (e) => {
-    const alterById = `http://localhost:8080/medico/altera/${stateId}`;
+  const [stateDeleteProdId, setStateDeleteProdId] = useState("")
 
-    e.preventDefault();
+  const handleFindAll = async () => {
+    const urlFindAll = `https://test-docker-repository.onrender.com/product/findAll`;
+
     try {
-      fetch(alterById, {
-        method: 'PUT',
-        headers: {
-          Accept: "application/json",
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          nome: stateNewName,
-          crm: stateNewCrm,
-        }),
-      })
+      fetch(urlFindAll)
         .then((response) => {
           console.log("Response received:", response);
 
           return response.json();
         })
-        .then((dadoUsuario) => {
-          console.log(dadoUsuario);
-
-        });
-    } catch (err) {
-      console.log("ERRO: ", err);
-    }
-  }
-
-  const callSearchById = (e) => {
-    const buscaPorId = `http://localhost:8080/medico/busca/${stateId}`;
-
-    e.preventDefault();
-    try {
-      fetch(buscaPorId)
-        .then((response) => {
-          console.log("Response received:", response);
-
-          return response.json();
-        })
-        .then((dadoUsuario) => {
-          console.log(dadoUsuario);
-          setStateNewId(dadoUsuario.id)
-          setStateNameById(dadoUsuario.nome);
-          setStateCrmById(dadoUsuario.crm);
+        .then((data) => {
+          console.log(data);
         });
     } catch (err) {
       console.log("ERRO: ", err);
     }
   };
 
-  const takeData = async () => {
-    const listarMedicos = `http://localhost:8080/medico/listar`;
+  const handleFindById = (e) => {
+    const urlFindById = `https://test-docker-repository.onrender.com/product/findById/${stateProdId}`;
 
+    e.preventDefault();
     try {
-      fetch(listarMedicos)
+      fetch(urlFindById)
         .then((response) => {
           console.log("Response received:", response);
 
           return response.json();
         })
-        .then((dadoLista) => {
-          console.log(dadoLista);
+        .then((data) => {
+          console.log(data);
+          setStateProdNameById(data.nome);
         });
     } catch (err) {
       console.log("ERRO: ", err);
     }
   };
-  
-  const callMedApi = (e) => {
+
+  const handleInsertProd = (e) => {
     const insertPost = `http://localhost:8080/medico/inserir`;
 
     e.preventDefault();
@@ -98,8 +67,7 @@ function App() {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          nome: stateName,
-          crm: stateCRM,
+          nome: stateProdName,
         }),
       })
         .then((response) => {
@@ -113,58 +81,84 @@ function App() {
     }
   };
 
-  const callDeleteUser = (e) => {
-    const deleteById = `http://localhost:8080/medico/delete/${stateId}`;
+  const handleUpdateProd = (e) => {
+    const alterById = `http://localhost:8080/medico/altera/${stateProdId}`;
+
+    e.preventDefault();
+    try {
+      fetch(alterById, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          nome: stateNewName,
+        }),
+      })
+        .then((response) => {
+          console.log("Response received:", response);
+
+          return response.json();
+        })
+        .then((dadoUsuario) => {
+          console.log(dadoUsuario);
+        });
+    } catch (err) {
+      console.log("ERRO: ", err);
+    }
+  };
+
+  const handleDeleteProd = (e) => {
+    const deleteById = `http://localhost:8080/medico/delete/${stateProdId}`;
 
     e.preventDefault();
     try {
       fetch(deleteById, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
       })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok ${response.statusText}`);
-        }
-        return response.json(); // Continua como JSON
-      })
-      .then((dadoUsuario) => {
-        console.log(dadoUsuario);
-        setStateResultadoApi(dadoUsuario.message); // Lida com a resposta JSON
-      })
-      .catch((err) => {
-        console.error("Erro ao fazer a requisição:", err);
-      });
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(
+              `Network response was not ok ${response.statusText}`
+            );
+          }
+          return response.json(); // Continua como JSON
+        })
+        .then((dadoUsuario) => {
+          console.log(dadoUsuario);
+          setStateResultadoApi(dadoUsuario.message); // Lida com a resposta JSON
+        })
+        .catch((err) => {
+          console.error("Erro ao fazer a requisição:", err);
+        });
     } catch (err) {
       console.error("ERRO:", err);
     }
-  }
+  };
 
   return (
     <div className="App">
-      <br/>
-      <button onClick={takeData}>Listar</button>
+      <br />
+      <h1>Listar</h1>
+      <button onClick={handleFindAll}>Listar</button>
       <br />
       <div className="formulario">
-        <form onSubmit={callMedApi} method="POST">
+        {/* Insert */}
+        <h3>Insert</h3>
+        <form onSubmit={handleInsertProd} method="POST">
           <label htmlFor="nome">Nome</label>
           <input
             type="text"
             name="nome"
             placeholder="Digite seu nome"
-            onChange={(e) => setStateName(e.target.value)}
+            onChange={(e) => setStateProdName(e.target.value)}
           />
           <br />
-          <label htmlFor="CRM">CRM</label>
-          <input
-            type="text"
-            name="CRM"
-            placeholder="Digite seu CRM"
-            onChange={(e) => setStateCRM(e.target.value)}
-          />
 
           <input type="submit" value="Gravar" />
 
@@ -177,21 +171,23 @@ function App() {
             }}
           >
             <br />
-            <span>{stateName}</span>
+            <span>{stateProdName}</span>
 
             <br />
 
-            <span>{stateCRM}</span>
+            <span>{`AINDA NÃO HÁ NADA`}</span>
           </div>
         </form>
-
-        <form onSubmit={callSearchById}>
+        
+        {/* Find by Id */}
+        <h3>Find by id</h3>
+        <form onSubmit={handleFindById} method="GET">
           <label htmlFor="nome">Id</label>
           <input
             type="text"
             name="nome"
             placeholder="Digite seu Id"
-            onChange={(e) => setStateId(e.target.value)}
+            onChange={(e) => setStateProdId(e.target.value)}
           />
 
           <input type="submit" value="Gravar" />
@@ -199,50 +195,31 @@ function App() {
           <div
             style={{
               display: "flex",
-              flexDirection: "column",  
+              flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
             }}
           >
             <br />
-            
-            <span>{stateNameById}</span>
+
+            <span>{stateProdNameById}</span>
 
             <br />
 
-            <span>{stateCrmById}</span>
+            <span>{`AINDA NÃO HÁ NADA`}</span>
           </div>
         </form>
-
-
-        <form onSubmit={callAlterUser} method="PUT">
-          <label htmlFor="ID">Id</label>
-          <input
-            type="text"
-            name="nome"
-            value={stateNewId}
-            onChange={ 
-              (e) => {
-                setStateId(e.target.value)
-                }
-            }
-            
-          />
+        
+        {/* Update */}
+        <h3>Update</h3>
+        <form onSubmit={handleUpdateProd} method="PUT">
 
           <label htmlFor="nome">Nome</label>
           <input
             type="text"
             name="nome"
-            placeholder={stateNameById}
+            placeholder={stateProdNameById}
             onChange={(e) => setStateNewName(e.target.value)}
-          />
-
-          <label htmlFor="CRM">CRM</label>
-          <input
-            type="text"
-            name="CRM"
-            placeholder={stateCrmById}
-            onChange={(e) => setStateNewCrm(e.target.value)}
           />
 
           <input type="submit" value="Gravar" />
@@ -256,27 +233,26 @@ function App() {
             }}
           >
             <br />
-            
+
             <span>{stateNewName}</span>
 
             <br />
 
-            <span>{stateNewCrm}</span>
+            <span>{`AINDA NÃO HÁ NADA`}</span>
           </div>
         </form>
-
-        <form onSubmit={callDeleteUser} method="DELETE">
+        
+        {/* Delete */}
+        <h3>Delete</h3>
+        <form onSubmit={handleDeleteProd} method="DELETE">
           <label htmlFor="ID">Id</label>
           <input
             type="text"
             name="nome"
             placeholder="Digite o id a ser deletado"
-            onChange={ 
-              (e) => {
-                setStateId(e.target.value)
-                }
-            }
-            
+            onChange={(e) => {
+              setStateDeleteProdId(e.target.value);
+            }}
           />
 
           <input type="submit" value="Gravar" />
@@ -290,9 +266,8 @@ function App() {
             }}
           >
             <br />
-            
-            <span>{stateResultadoApi}</span>
 
+            <span>{stateResultadoApi}</span>
           </div>
         </form>
       </div>
