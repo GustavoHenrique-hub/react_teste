@@ -2,19 +2,29 @@ import { useState } from "react";
 import "./App.css";
 
 function App() {
+  
   //Find all values
-  const [stateProdId, setStateProdId] = useState("");
-  const [stateProdName, setStateProdName] = useState("");
-  const [stateProdQuant, setStateProdQuant] = useState("");
-  const [stateProdPrice, setStateProdPrice] = useState("")
-
+  const [stateProdNewName, setStateProdNewName] = useState("");
+  const [stateProdNewQuant, setStateProdNewQuant] = useState("");
+  const [stateProdNewPrice, setStateProdNewPrice] = useState("");
+  
+  //Find value by ID
+  const [stateFindProdId, setStateFindProdId] = useState("");
   const [stateProdNameById, setStateProdNameById] = useState("");
+  const [stateProdQuantById, setStateProdQuantById] = useState("");
+  const [stateProdPriceById, setStateProdPriceById] = useState("");
 
-  const [stateNewName, setStateNewName] = useState("");
+  //Update value by ID
+  const [stateUpdateProdId, setStateUpdateProdId] = useState("");
+  const [stateProdUpdateName, setStateProdUpdateName] = useState("");
+  const [stateProdUpdateQuant, setStateProdUpdateQuant] = useState("");
+  const [stateProdUpdatePrice, setStateProdUpdatePrice] = useState("");
 
-  const [stateResultadoApi, setStateResultadoApi] = useState("");
+  //Delete value by ID
+  const [stateDeleteProdId, setStateDeleteProdId] = useState("");
 
-  const [stateDeleteProdId, setStateDeleteProdId] = useState("")
+  //API Response
+  const [stateApiResponse, setStateApiResponse] = useState("");
 
   const handleFindAll = async () => {
     const urlFindAll = `https://test-docker-repository.onrender.com/product/findAll`;
@@ -35,7 +45,7 @@ function App() {
   };
 
   const handleFindById = (e) => {
-    const urlFindById = `https://test-docker-repository.onrender.com/product/findById/${stateProdId}`;
+    const urlFindById = `https://test-docker-repository.onrender.com/product/findById/${stateFindProdId}`;
 
     e.preventDefault();
     try {
@@ -47,7 +57,10 @@ function App() {
         })
         .then((data) => {
           console.log(data);
-          setStateProdNameById(data.nome);
+          setStateUpdateProdId(data.id)
+          setStateProdNameById(data.name);
+          setStateProdQuantById(data.quantity);
+          setStateProdPriceById(data.price);
         });
     } catch (err) {
       console.log("ERRO: ", err);
@@ -55,7 +68,7 @@ function App() {
   };
 
   const handleInsertProd = (e) => {
-    const insertPost = `http://localhost:8080/medico/inserir`;
+    const insertPost = `https://test-docker-repository.onrender.com/product/insert`;
 
     e.preventDefault();
 
@@ -67,14 +80,17 @@ function App() {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          nome: stateProdName,
+          name: stateProdNewName,
+          quantity: stateProdNewQuant,
+          price: stateProdNewPrice
         }),
       })
         .then((response) => {
           return response.json();
         })
-        .then((dadoAPI) => {
-          console.log(dadoAPI);
+        .then((data) => {
+          console.log(data);
+          alert(data.message)
         });
     } catch (err) {
       console.log("ERROR FETCHING DATA: ", err);
@@ -82,7 +98,7 @@ function App() {
   };
 
   const handleUpdateProd = (e) => {
-    const alterById = `http://localhost:8080/medico/altera/${stateProdId}`;
+    const alterById = `https://test-docker-repository.onrender.com/product/update/${stateUpdateProdId}`;
 
     e.preventDefault();
     try {
@@ -93,7 +109,9 @@ function App() {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          nome: stateNewName,
+          name: stateProdUpdateName,
+          quantity: stateProdUpdateQuant,
+          price: stateProdUpdatePrice
         }),
       })
         .then((response) => {
@@ -101,8 +119,9 @@ function App() {
 
           return response.json();
         })
-        .then((dadoUsuario) => {
-          console.log(dadoUsuario);
+        .then((data) => {
+          console.log(data.message);
+          alert(data.message)
         });
     } catch (err) {
       console.log("ERRO: ", err);
@@ -110,7 +129,7 @@ function App() {
   };
 
   const handleDeleteProd = (e) => {
-    const deleteById = `http://localhost:8080/medico/delete/${stateProdId}`;
+    const deleteById = `https://test-docker-repository.onrender.com/product/delete/${stateDeleteProdId}`;
 
     e.preventDefault();
     try {
@@ -127,11 +146,11 @@ function App() {
               `Network response was not ok ${response.statusText}`
             );
           }
-          return response.json(); // Continua como JSON
+          return response.json();
         })
-        .then((dadoUsuario) => {
-          console.log(dadoUsuario);
-          setStateResultadoApi(dadoUsuario.message); // Lida com a resposta JSON
+        .then((data) => {
+          console.log(data);
+          alert(data.message);
         })
         .catch((err) => {
           console.error("Erro ao fazer a requisição:", err);
@@ -145,18 +164,34 @@ function App() {
     <div className="App">
       <br />
       <h1>Listar</h1>
-      <button onClick={handleFindAll}>Listar</button>
+      <button onClick={handleFindAll}>List</button>
       <br />
       <div className="formulario">
         {/* Insert */}
         <h3>Insert</h3>
         <form onSubmit={handleInsertProd} method="POST">
-          <label htmlFor="nome">Nome</label>
+          <label htmlFor="name">Name</label>
           <input
             type="text"
-            name="nome"
-            placeholder="Digite seu nome"
-            onChange={(e) => setStateProdName(e.target.value)}
+            name="name"
+            placeholder="Type product name"
+            onChange={(e) => setStateProdNewName(e.target.value)}
+          />
+          <br />
+          <label htmlFor="quant">Quantity</label>
+          <input
+            type="number"
+            name="quant"
+            placeholder="Type product quantity"
+            onChange={(e) => setStateProdNewQuant(e.target.value)}
+          />
+          <br />
+          <label htmlFor="price">Price</label>
+          <input
+            type="number"
+            name="quant"
+            placeholder="Type product price"
+            onChange={(e) => setStateProdNewPrice(e.target.value)}
           />
           <br />
 
@@ -171,11 +206,11 @@ function App() {
             }}
           >
             <br />
-            <span>{stateProdName}</span>
-
+            <span>{stateProdNewName}</span>
             <br />
-
-            <span>{`AINDA NÃO HÁ NADA`}</span>
+            <span>{stateProdNewQuant}</span>
+            <br />
+            <span>{stateProdNewPrice}</span>
           </div>
         </form>
         
@@ -187,7 +222,7 @@ function App() {
             type="text"
             name="nome"
             placeholder="Digite seu Id"
-            onChange={(e) => setStateProdId(e.target.value)}
+            onChange={(e) => setStateFindProdId(e.target.value)}
           />
 
           <input type="submit" value="Gravar" />
@@ -205,8 +240,12 @@ function App() {
             <span>{stateProdNameById}</span>
 
             <br />
+            <span>{stateProdQuantById}</span>
 
-            <span>{`AINDA NÃO HÁ NADA`}</span>
+            <br />
+            <span>{stateProdPriceById}</span>
+
+            <br />
           </div>
         </form>
         
@@ -214,13 +253,30 @@ function App() {
         <h3>Update</h3>
         <form onSubmit={handleUpdateProd} method="PUT">
 
-          <label htmlFor="nome">Nome</label>
+          <label htmlFor="name">Name</label>
           <input
             type="text"
-            name="nome"
+            name="name"
             placeholder={stateProdNameById}
-            onChange={(e) => setStateNewName(e.target.value)}
+            onChange={(e) => setStateProdUpdateName(e.target.value)}
           />
+          <br />
+          <label htmlFor="quant">Quantity</label>
+          <input
+            type="number"
+            name="quant"
+            placeholder={stateProdQuantById}
+            onChange={(e) => setStateProdUpdateQuant(e.target.value)}
+          />
+          <br />
+          <label htmlFor="price">Price</label>
+          <input
+            type="number"
+            name="price"
+            placeholder={stateProdPriceById}
+            onChange={(e) => setStateProdUpdatePrice(e.target.value)}
+          />
+          <br />
 
           <input type="submit" value="Gravar" />
 
@@ -234,11 +290,15 @@ function App() {
           >
             <br />
 
-            <span>{stateNewName}</span>
+            <span>{stateProdUpdateName}</span>
 
             <br />
+            <span>{stateProdUpdateQuant}</span>
 
-            <span>{`AINDA NÃO HÁ NADA`}</span>
+            <br />
+            <span>{stateProdUpdatePrice}</span>
+
+            <br />
           </div>
         </form>
         
@@ -249,7 +309,7 @@ function App() {
           <input
             type="text"
             name="nome"
-            placeholder="Digite o id a ser deletado"
+            placeholder="Type the id to be deleted"
             onChange={(e) => {
               setStateDeleteProdId(e.target.value);
             }}
@@ -267,7 +327,7 @@ function App() {
           >
             <br />
 
-            <span>{stateResultadoApi}</span>
+            <span>{stateApiResponse}</span>
           </div>
         </form>
       </div>
